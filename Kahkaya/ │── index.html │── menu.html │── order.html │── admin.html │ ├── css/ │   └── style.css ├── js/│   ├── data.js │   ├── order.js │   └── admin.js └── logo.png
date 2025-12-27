@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Kaحkaya</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo.png" class="logo">
+  <h1>Kaحkaya</h1>
+  <p>لكل قطمة حكاية</p>
+</header>
+
+<div class="home-buttons">
+  <a href="menu.html"><button>عرض المنيو</button></a>
+  <a href="order.html"><button>طلب أوردر</button></a>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>المنيو</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js" defer></script>
+</head>
+<body>
+
+<h2>المنيو</h2>
+<div id="menu"></div>
+
+<script>
+menu.forEach(i=>{
+  document.getElementById("menu").innerHTML+=`
+  <div class="card">
+    <h3>${i.name}</h3>
+    <p>${i.price} جنيه</p>
+    <small>${i.type==="kg"?"بالكيلو":"علبة فقط"}</small>
+  </div>`;
+});
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>طلب أوردر</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js" defer></script>
+  <script src="js/order.js" defer></script>
+</head>
+<body>
+
+<h2>طلب أوردر</h2>
+<div id="products"></div>
+
+<h3>بيانات العميل</h3>
+<input id="name" placeholder="الاسم">
+<input id="phone" placeholder="رقم الموبايل">
+<input id="phone2" placeholder="رقم آخر (اختياري)">
+<input id="address" placeholder="العنوان">
+
+<p>الدفع على محفظة: <b>01556444869</b></p>
+<input type="file">
+
+<button onclick="confirmOrder()">تأكيد الطلب</button>
+
+<script>
+menu.forEach((i,x)=>{
+  products.innerHTML+=`
+  <div class="card">
+    <h3>${i.name}</h3>
+    <p>${i.price} جنيه</p>
+    <input type="number" step="0.25" id="q${x}" placeholder="${i.type}">
+    <button onclick="addToCart(menu[${x}],q${x}.value)">إضافة</button>
+  </div>`;
+});
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/admin.js" defer></script>
+</head>
+<body>
+
+<h2>الطلبات</h2>
+<div id="orders"></div>
+
+</body>
+</html>
+body{
+  background:silver;
+  font-family:Arial;
+  direction:rtl;
+  text-align:center;
+}
+
+.logo{width:120px}
+
+button{
+  background:#bfa36f;
+  color:#fff;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+}
+
+.card{
+  background:#fff;
+  margin:10px;
+  padding:15px;
+  border-radius:10px;
+}
+
+.home-buttons{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+
+input{
+  display:block;
+  margin:8px auto;
+  padding:8px;
+  width:90%;
+}
+
+/* RESPONSIVE */
+@media only screen and (max-width: 768px) {
+  body { padding:10px; }
+  header h1, header p { font-size:22px; }
+  .home-buttons { flex-direction:column; gap:10px; }
+  button { width:90%; font-size:18px; margin:10px auto; }
+  input { width:90%; font-size:16px; }
+  .card { padding:12px; margin:8px 0; font-size:16px; }
+}
+const menu=[
+ {name:"كوكيز فانيليا",price:250,type:"kg"},
+ {name:"غريبة بالسمن البلدي",price:450,type:"kg"},
+ {name:"كحك سادة",price:220,type:"kg"},
+ {name:"دونات (علبة 10 قطع)",price:100,type:"box"}
+];
+let cart=[];
+
+function addToCart(i,q){
+ if(!q) return alert("ادخل كمية");
+ cart.push({name:i.name,total:i.price*q});
+ alert("تمت الإضافة");
+}
+
+function confirmOrder(){
+ let orders=JSON.parse(localStorage.orders||"[]");
+ orders.push({cart,status:"قيد المراجعة"});
+ localStorage.orders=JSON.stringify(orders);
+ alert("تم الإرسال – في انتظار موافقة الأدمن");
+}
+let orders=JSON.parse(localStorage.orders||"[]");
+const ordersBox=document.getElementById("orders");
+
+function render(){
+  ordersBox.innerHTML="";
+  orders.forEach((o,i)=>{
+    ordersBox.innerHTML+=`
+    <div class="card">
+      طلب ${i+1} - الحالة: ${o.status}
+      <button onclick="approve(${i})">قبول</button>
+      <button onclick="reject(${i})">رفض</button>
+    </div>`;
+  });
+}
+
+function approve(i){ orders[i].status="مقبول"; localStorage.orders=JSON.stringify(orders); render(); }
+function reject(i){ orders[i].status="مرفوض"; localStorage.orders=JSON.stringify(orders); render(); }
+
+render();
